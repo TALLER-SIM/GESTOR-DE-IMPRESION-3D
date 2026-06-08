@@ -6,13 +6,13 @@
     <title>Gestor Soluciones de Ingeniería</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col">
+<body class="bg-gray-100 min-h-screen">
 
-    <nav class="bg-slate-900 text-white shadow-md p-4 flex justify-between items-center">
+    <nav class="bg-slate-900 text-white p-4 flex justify-between items-center">
         <h1 class="font-black">Soluciones de Ingeniería</h1>
         <div class="space-x-2">
             <button onclick="cambiarPantalla('cotizador')" class="bg-blue-600 px-3 py-1 rounded text-sm font-bold">Cotizador</button>
-            <button onclick="cambiarPantalla('inventario')" class="text-gray-300 hover:text-white text-sm font-bold">Inventario</button>
+            <button onclick="cambiarPantalla('inventario')" class="bg-slate-700 px-3 py-1 rounded text-sm font-bold">Inventario</button>
         </div>
     </nav>
 
@@ -24,8 +24,8 @@
             <div class="grid grid-cols-2 gap-4">
                 <div><label class="text-xs font-bold text-gray-500">Gramos (g)</label><input type="number" id="peso" class="border p-2 rounded w-full"></div>
                 <div><label class="text-xs font-bold text-gray-500">Horas (h)</label><input type="number" id="tiempo" class="border p-2 rounded w-full"></div>
-                <div><label class="text-xs font-bold text-gray-500">Riesgo (Merma %)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
-                <div><label class="text-xs font-bold text-gray-500">Utilidad Deseada (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
+                <div><label class="text-xs font-bold text-gray-500">Riesgo (%)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
+                <div><label class="text-xs font-bold text-gray-500">Utilidad (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
             </div>
             
             <label class="flex items-center text-sm font-bold"><input type="checkbox" id="incluirIva" class="mr-2"> Factura (+16% IVA)</label>
@@ -38,15 +38,20 @@
                 <h2 class="font-bold mb-4">Registrar Nuevo Material</h2>
                 <div class="grid grid-cols-2 gap-4">
                     <input type="text" id="nuevoTipo" placeholder="Tipo (ej. ABS)" class="border p-2 rounded">
-                    <input type="text" id="nuevaMarca" placeholder="Marca (ej. SUNLU)" class="border p-2 rounded">
-                    <input type="number" id="nuevoPeso" placeholder="Peso inicial (g)" class="border p-2 rounded">
+                    <input type="text" id="nuevaMarca" placeholder="Marca" class="border p-2 rounded">
+                    <input type="number" id="nuevoPeso" placeholder="Peso (g)" class="border p-2 rounded">
                     <input type="number" id="nuevoCosto" placeholder="Costo/Kg" class="border p-2 rounded">
                     <button onclick="agregarMaterial()" class="col-span-2 bg-slate-800 text-white font-bold py-2 rounded">Guardar</button>
                 </div>
             </div>
+            
             <div class="bg-white p-6 rounded shadow overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead><tr class="bg-gray-100 text-xs uppercase"><th class="p-2">Mat.</th><th class="p-2">Marca</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th></tr></thead>
+                    <thead>
+                        <tr class="bg-gray-100 text-xs uppercase">
+                            <th class="p-2">Mat.</th><th class="p-2">Marca</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th>
+                        </tr>
+                    </thead>
                     <tbody id="tablaInventario"></tbody>
                 </table>
             </div>
@@ -65,18 +70,20 @@
             localStorage.setItem('inventarioTaller', JSON.stringify(inventario));
             const tabla = document.getElementById('tablaInventario');
             const select = document.getElementById('selectMaterial');
-            tabla.innerHTML = ''; select.innerHTML = '';
+            tabla.innerHTML = ''; select.innerHTML = '<option value="">Selecciona Material</option>';
             
             inventario.forEach((mat, i) => {
                 tabla.innerHTML += `<tr class="border-b text-sm">
-                    <td class="p-2 font-bold">${mat.tipo}</td><td class="p-2">${mat.marca}</td>
+                    <td class="p-2 font-bold">${mat.tipo}</td>
+                    <td class="p-2">${mat.marca}</td>
                     <td class="p-2 font-bold text-blue-600">${mat.peso}g</td>
-                    <td class="p-2 space-x-1">
-                        <button onclick="descontar(${i})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">-</button>
-                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">Edit</button>
-                        <button onclick="eliminar(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">X</button>
-                    </td></tr>`;
-                select.innerHTML += `<option value="${mat.costo}">${mat.tipo} (${mat.marca}) - $${mat.costo}/kg</option>`;
+                    <td class="p-2 flex gap-1">
+                        <button onclick="descontar(${i})" class="bg-blue-500 text-white px-2 py-1 rounded">Consumo</button>
+                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
+                        <button onclick="eliminar(${i})" class="bg-red-500 text-white px-2 py-1 rounded">X</button>
+                    </td>
+                </tr>`;
+                select.innerHTML += `<option value="${i}">${mat.tipo} (${mat.marca}) - $${mat.costo}/kg</option>`;
             });
         }
 
@@ -84,7 +91,7 @@
             const m = inventario[i];
             const t = prompt("Nuevo nombre:", m.tipo);
             const mr = prompt("Nueva marca:", m.marca);
-            const c = prompt("Nuevo costo/kg:", m.costo);
+            const c = prompt("Nuevo costo por Kg:", m.costo);
             if(t) m.tipo = t; if(mr) m.marca = mr; if(c) m.costo = parseFloat(c);
             actualizarInterfaz();
         }
@@ -100,14 +107,17 @@
         }
 
         function descontar(i) {
-            const gr = prompt("Gramos usados:");
+            const gr = prompt("Gramos utilizados:");
             if(gr) { inventario[i].peso -= parseFloat(gr); actualizarInterfaz(); }
         }
 
-        function eliminar(i) { if(confirm("¿Borrar?")) { inventario.splice(i, 1); actualizarInterfaz(); } }
+        function eliminar(i) { if(confirm("¿Eliminar material?")) { inventario.splice(i, 1); actualizarInterfaz(); } }
 
         function calcularCosto() {
-            const mat = inventario[document.getElementById('selectMaterial').selectedIndex];
+            const idx = document.getElementById('selectMaterial').value;
+            if(idx === "") { alert("Selecciona un material"); return; }
+            const mat = inventario[idx];
+            
             const peso = parseFloat(document.getElementById('peso').value);
             const tiempo = parseFloat(document.getElementById('tiempo').value);
             const merma = parseFloat(document.getElementById('merma').value)/100;
@@ -119,6 +129,7 @@
             document.getElementById('precioVenta').innerText = "$" + Math.ceil(final) + ".00 MXN";
             document.getElementById('resultado').classList.remove('hidden');
         }
+        
         actualizarInterfaz();
     </script>
 </body>
