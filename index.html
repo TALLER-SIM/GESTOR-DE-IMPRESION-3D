@@ -11,8 +11,8 @@
     <nav class="bg-slate-900 text-white p-4 flex justify-between items-center">
         <h1 class="font-black">Soluciones de Ingeniería</h1>
         <div class="space-x-2">
-            <button onclick="cambiarPantalla('cotizador')" class="bg-blue-600 px-3 py-1 rounded text-sm font-bold">Cotizador</button>
-            <button onclick="cambiarPantalla('inventario')" class="bg-slate-700 px-3 py-1 rounded text-sm font-bold">Inventario</button>
+            <button id="navCot" onclick="cambiarPantalla('cotizador')" class="bg-blue-600 px-3 py-1 rounded text-sm font-bold">Cotizador</button>
+            <button id="navInv" onclick="cambiarPantalla('inventario')" class="bg-slate-700 px-3 py-1 rounded text-sm font-bold">Inventario</button>
         </div>
     </nav>
 
@@ -24,7 +24,6 @@
             <div class="grid grid-cols-2 gap-4">
                 <div><label class="text-xs font-bold text-gray-500">Gramos (g)</label><input type="number" id="peso" class="border p-2 rounded w-full"></div>
                 <div><label class="text-xs font-bold text-gray-500">Tiempo (min)</label><input type="number" id="tiempoMin" class="border p-2 rounded w-full"></div>
-                
                 <div><label class="text-xs font-bold text-gray-500">Riesgo (%)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
                 <div><label class="text-xs font-bold text-gray-500">Utilidad (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
             </div>
@@ -61,6 +60,8 @@
         function cambiarPantalla(p) {
             document.getElementById('pantallaCotizador').style.display = p === 'cotizador' ? 'block' : 'none';
             document.getElementById('pantallaInventario').style.display = p === 'inventario' ? 'block' : 'none';
+            document.getElementById('navCot').className = p === 'cotizador' ? 'bg-blue-600 px-3 py-1 rounded text-sm font-bold' : 'bg-slate-700 px-3 py-1 rounded text-sm font-bold';
+            document.getElementById('navInv').className = p === 'inventario' ? 'bg-blue-600 px-3 py-1 rounded text-sm font-bold' : 'bg-slate-700 px-3 py-1 rounded text-sm font-bold';
         }
 
         function actualizarInterfaz() {
@@ -70,16 +71,18 @@
             tabla.innerHTML = ''; select.innerHTML = '<option value="">Selecciona Material</option>';
             
             inventario.forEach((mat, i) => {
-                tabla.innerHTML += `<tr class="border-b text-sm">
+                const row = document.createElement('tr');
+                row.className = "border-b text-sm";
+                row.innerHTML = `
                     <td class="p-2 font-bold">${mat.tipo}</td>
                     <td class="p-2">${mat.marca}</td>
                     <td class="p-2 font-bold text-blue-600">${mat.peso}g</td>
                     <td class="p-2 flex gap-1">
-                        <button onclick="descontar(${i})" class="bg-blue-500 text-white px-2 py-1 rounded">Consumo</button>
-                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</button>
-                        <button onclick="eliminar(${i})" class="bg-red-500 text-white px-2 py-1 rounded">X</button>
-                    </td>
-                </tr>`;
+                        <button onclick="descontar(${i})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Consumo</button>
+                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">Edit</button>
+                        <button onclick="eliminar(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">X</button>
+                    </td>`;
+                tabla.appendChild(row);
                 select.innerHTML += `<option value="${i}">${mat.tipo} (${mat.marca}) - $${mat.costo}/kg</option>`;
             });
         }
@@ -94,18 +97,18 @@
         }
 
         function agregarMaterial() {
-            inventario.push({ 
-                tipo: document.getElementById('nuevoTipo').value, 
-                marca: document.getElementById('nuevaMarca').value, 
-                peso: parseFloat(document.getElementById('nuevoPeso').value), 
-                costo: parseFloat(document.getElementById('nuevoCosto').value) 
-            });
+            const tipo = document.getElementById('nuevoTipo').value;
+            const marca = document.getElementById('nuevaMarca').value;
+            const peso = parseFloat(document.getElementById('nuevoPeso').value);
+            const costo = parseFloat(document.getElementById('nuevoCosto').value);
+            if(!tipo || isNaN(costo)) return alert("Completa los datos");
+            inventario.push({ tipo, marca, peso, costo });
             actualizarInterfaz();
         }
 
         function descontar(i) {
             const gr = prompt("Gramos utilizados:");
-            if(gr) { inventario[i].peso -= parseFloat(gr); actualizarInterfaz(); }
+            if(gr && !isNaN(gr)) { inventario[i].peso -= parseFloat(gr); actualizarInterfaz(); }
         }
 
         function eliminar(i) { if(confirm("¿Eliminar material?")) { inventario.splice(i, 1); actualizarInterfaz(); } }
@@ -116,10 +119,15 @@
             const mat = inventario[idx];
             
             const peso = parseFloat(document.getElementById('peso').value);
-            // CONVERSIÓN: Minutos a horas para el cálculo de tarifa
-            const tiempoHoras = parseFloat(document.getElementById('tiempoMin').value) / 60;
+            const tiempoMin = parseFloat(document.getElementById('tiempoMin').value);
             const merma = parseFloat(document.getElementById('merma').value)/100;
             const utilidad = parseFloat(document.getElementById('utilidad').value)/100;
             
-            // Tarifa de 15 MXN/hora aplicada a la fracción de hora
-            const costoBase = ((peso/1
+            const costoBase = ((peso/1000)*mat.costo) + ((tiempoMin/60)*15) + 50;
+            const final = (costoBase * (1 + merma) * (1 + utilidad)) * (document.getElementById('incluirIva').checked ? 1.16 : 1);
+            
+            document.getElementById('precioVenta').innerText = "$" + Math.ceil(final) + ".00 MXN";
+            document.getElementById('resultado').classList.remove('hidden');
+        }
+        
+        actualizarInterfaz();
