@@ -3,259 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestor de Manufactura Aditiva</title>
+    <title>Gestor Soluciones de Ingeniería</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
     <nav class="bg-slate-900 text-white shadow-md">
         <div class="max-w-6xl mx-auto px-4 flex justify-between items-center h-16">
             <div>
-                <span class="font-black text-xl tracking-tight">Soluciones de Ingeniería</span>
-                <p class="text-xs text-blue-400 -mt-1">Gestor de Manufactura Aditiva</p>
+                <span class="font-black text-xl">Soluciones de Ingeniería</span>
             </div>
             <div class="flex space-x-2">
-                <button id="btnCotizador" onclick="cambiarPantalla('cotizador')" class="px-4 py-2 rounded-md text-sm font-bold bg-blue-600 text-white transition">Cotizador</button>
-                <button id="btnInventario" onclick="cambiarPantalla('inventario')" class="px-4 py-2 rounded-md text-sm font-bold text-gray-300 hover:bg-slate-800 transition">Inventario</button>
+                <button id="btnCotizador" onclick="cambiarPantalla('cotizador')" class="px-4 py-2 rounded bg-blue-600 text-sm font-bold">Cotizador</button>
+                <button id="btnInventario" onclick="cambiarPantalla('inventario')" class="px-4 py-2 rounded text-gray-300 hover:bg-slate-800 text-sm font-bold">Inventario</button>
             </div>
         </div>
     </nav>
 
-    <main class="flex-grow max-w-6xl w-full mx-auto p-4 md:p-6">
-        
-        <section id="pantallaCotizador" class="block max-w-lg mx-auto bg-white rounded-xl shadow-md p-6 border-t-4 border-blue-600">
-            <h2 class="text-2xl font-extrabold text-gray-800 mb-6">Cotización Comercial</h2>
-            
+    <main class="flex-grow max-w-6xl w-full mx-auto p-4">
+        <section id="pantallaCotizador" class="block max-w-lg mx-auto bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold mb-4">Cotización Comercial</h2>
             <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre de la Pieza</label>
-                    <input type="text" id="nombrePieza" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Seleccionar Material</label>
-                    <select id="selectMaterial" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500"></select>
-                </div>
-
+                <select id="selectMaterial" class="w-full border p-2 rounded"></select>
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Peso Laminador (g)</label>
-                        <input type="number" id="peso" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tiempo Laminador (h)</label>
-                        <input type="number" id="tiempo" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500">
-                    </div>
+                    <input type="number" id="peso" placeholder="Peso (g)" class="border p-2 rounded w-full">
+                    <input type="number" id="tiempo" placeholder="Tiempo (h)" class="border p-2 rounded w-full">
                 </div>
-
-                <div class="grid grid-cols-2 gap-4 border-t border-gray-200 pt-4 mt-2">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1" title="Para piezas técnicas que pueden fallar">Margen de Riesgo (%)</label>
-                        <input type="number" id="merma" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-yellow-50 focus:ring-2 focus:ring-yellow-500" value="15">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1" title="Tu ganancia libre">Utilidad Deseada (%)</label>
-                        <input type="number" id="utilidad" class="w-full rounded-md border border-gray-300 px-3 py-2 bg-green-50 focus:ring-2 focus:ring-green-500" value="100">
-                    </div>
+                <div class="flex items-center">
+                    <input type="checkbox" id="incluirIva" class="w-5 h-5">
+                    <label class="ml-2 font-bold text-sm">¿Incluye Factura (+16% IVA)?</label>
                 </div>
-
-                <div class="flex items-center bg-gray-50 p-3 rounded-md border border-gray-200 mt-2">
-                    <input type="checkbox" id="incluirIva" class="w-5 h-5 text-blue-600 rounded border-gray-300 focus:ring-blue-500 cursor-pointer">
-                    <label for="incluirIva" class="ml-3 text-sm font-bold text-gray-800 cursor-pointer select-none">Requerirá Factura (+16% IVA)</label>
-                </div>
-
-                <button onclick="calcularCosto()" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition mt-4 shadow-lg">
-                    Generar Precio de Venta
-                </button>
+                <button onclick="calcularCosto()" class="w-full bg-blue-600 text-white font-bold py-2 rounded">Generar Precio</button>
             </div>
-
-            <div id="resultado" class="mt-6 hidden">
-                <div class="p-4 bg-gray-100 rounded-t-lg border border-gray-300 border-b-0">
-                    <h3 class="text-xs uppercase font-bold text-gray-500 mb-2">Costos Internos del Taller</h3>
-                    <div class="flex justify-between text-sm text-gray-600 mb-1">
-                        <span>Material + Máquina + Preparación:</span>
-                        <span id="costoBruto" class="font-semibold">$0.00</span>
-                    </div>
-                    <div class="flex justify-between text-sm text-gray-600">
-                        <span>Reserva por Riesgo/Fallo:</span>
-                        <span id="costoRiesgo" class="font-semibold text-yellow-700">+$0.00</span>
-                    </div>
-                </div>
-                
-                <div class="p-5 bg-green-50 border border-green-200 rounded-b-lg">
-                    <div class="flex justify-between items-center text-sm text-green-800 mb-1">
-                        <span>Utilidad Neta (Ganancia):</span>
-                        <span id="gananciaReal" class="font-bold">+$0.00</span>
-                    </div>
-                    
-                    <div id="lineaSubtotal" class="flex justify-between items-center text-sm text-gray-600 mb-1 hidden">
-                        <span>Subtotal:</span>
-                        <span id="subtotalVenta" class="font-semibold">$0.00</span>
-                    </div>
-                    
-                    <div id="lineaIva" class="flex justify-between items-center text-sm text-gray-600 mb-1 hidden">
-                        <span>IVA (16%):</span>
-                        <span id="montoIva" class="font-semibold text-gray-800">+$0.00</span>
-                    </div>
-
-                    <div class="flex justify-between items-end border-t border-green-300 pt-3 mt-2">
-                        <span class="text-sm font-bold text-gray-800">PRECIO A COBRAR:</span>
-                        <span id="precioVenta" class="text-2xl font-black text-green-700">$0.00 MXN</span>
-                    </div>
-                </div>
+            <div id="resultado" class="mt-6 p-4 bg-green-50 rounded hidden">
+                <p id="precioVenta" class="text-2xl font-black text-green-700 text-center"></p>
             </div>
         </section>
 
-        <section id="pantallaInventario" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl shadow-md p-6 h-fit border-t-4 border-slate-600">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Alta Manual de Material</h2>
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Material</label>
-                        <input type="text" id="nuevoTipo" class="w-full rounded-md border border-gray-300 px-3 py-2">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Marca / Color</label>
-                        <input type="text" id="nuevaMarca" class="w-full rounded-md border border-gray-300 px-3 py-2">
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Peso (g)</label>
-                            <input type="number" id="nuevoPeso" class="w-full rounded-md border border-gray-300 px-3 py-2" value="1000">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Costo/Kg ($)</label>
-                            <input type="number" id="nuevoCosto" class="w-full rounded-md border border-gray-300 px-3 py-2">
-                        </div>
-                    </div>
-                    <button onclick="agregarMaterial()" class="w-full bg-slate-800 text-white font-bold py-2 px-4 rounded-lg hover:bg-slate-900 transition mt-2">
-                        Guardar en Inventario
-                    </button>
+        <section id="pantallaInventario" class="hidden">
+            <div class="bg-white p-6 rounded shadow mb-6">
+                <h2 class="font-bold mb-4">Registrar Nuevo Material</h2>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <input type="text" id="nuevoTipo" placeholder="Tipo (ej. Nylon-CF)" class="border p-2 rounded">
+                    <input type="number" id="nuevoPeso" placeholder="Peso inicial (g)" class="border p-2 rounded">
+                    <input type="number" id="nuevoCosto" placeholder="Costo por Kg" class="border p-2 rounded">
+                    <button onclick="agregarMaterial()" class="bg-slate-800 text-white rounded font-bold">+ Agregar</button>
                 </div>
             </div>
-
-            <div class="bg-white rounded-xl shadow-md p-6 md:col-span-2 overflow-x-auto">
-                <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Materiales en Taller</h2>
-                <table class="w-full text-left border-collapse min-w-[500px]">
-                    <thead>
-                        <tr class="bg-gray-100 text-gray-700 text-sm">
-                            <th class="p-3 border-b">Material</th>
-                            <th class="p-3 border-b">Marca</th>
-                            <th class="p-3 border-b">Disp.</th>
-                            <th class="p-3 border-b">Costo/Kg</th>
-                            <th class="p-3 border-b text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tablaInventario" class="text-sm text-gray-800"></tbody>
+            <div class="bg-white p-6 rounded shadow overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead><tr class="bg-gray-100 text-sm uppercase"><th class="p-3">Material</th><th class="p-3">Disp. (g)</th><th class="p-3">Acciones</th></tr></thead>
+                    <tbody id="tablaInventario"></tbody>
                 </table>
             </div>
         </section>
     </main>
 
     <script>
-        let inventario = JSON.parse(localStorage.getItem('inventarioTaller')) || [
-            { tipo: "Nylon-CF (PA-CF)", marca: "Genérico Negro", peso: 850, costo: 1800 },
-            { tipo: "TPU Flexible", marca: "Sainsmart Azul", peso: 1000, costo: 700 },
-            { tipo: "ABS", marca: "Hatchbox Gris", peso: 320, costo: 600 }
-        ];
-
-        function guardarYActualizar() {
-            localStorage.setItem('inventarioTaller', JSON.stringify(inventario));
-            actualizarInterfaz();
-        }
+        let inventario = JSON.parse(localStorage.getItem('inventarioTaller')) || [];
 
         function cambiarPantalla(pantalla) {
-            const cot = document.getElementById('pantallaCotizador');
-            const inv = document.getElementById('pantallaInventario');
-            const btnCot = document.getElementById('btnCotizador');
-            const btnInv = document.getElementById('btnInventario');
-
-            if (pantalla === 'cotizador') {
-                cot.classList.replace('hidden', 'block');
-                inv.classList.replace('grid', 'hidden');
-                btnCot.className = "px-4 py-2 rounded-md text-sm font-bold bg-blue-600 text-white transition";
-                btnInv.className = "px-4 py-2 rounded-md text-sm font-bold text-gray-300 hover:bg-slate-800 transition";
-            } else {
-                inv.classList.replace('hidden', 'grid');
-                cot.classList.replace('block', 'hidden');
-                btnInv.className = "px-4 py-2 rounded-md text-sm font-bold bg-slate-800 text-white transition";
-                btnCot.className = "px-4 py-2 rounded-md text-sm font-bold text-gray-300 hover:bg-slate-800 transition";
-            }
+            document.getElementById('pantallaCotizador').style.display = pantalla === 'cotizador' ? 'block' : 'none';
+            document.getElementById('pantallaInventario').style.display = pantalla === 'inventario' ? 'block' : 'none';
+            document.getElementById('btnCotizador').className = pantalla === 'cotizador' ? 'px-4 py-2 rounded bg-blue-600 text-sm font-bold' : 'px-4 py-2 rounded text-gray-300';
+            document.getElementById('btnInventario').className = pantalla === 'inventario' ? 'px-4 py-2 rounded bg-blue-600 text-sm font-bold' : 'px-4 py-2 rounded text-gray-300';
         }
 
         function actualizarInterfaz() {
+            localStorage.setItem('inventarioTaller', JSON.stringify(inventario));
             const tabla = document.getElementById('tablaInventario');
             const select = document.getElementById('selectMaterial');
-            
             tabla.innerHTML = '';
-            select.innerHTML = '';
-
-            inventario.forEach((mat, index) => {
+            select.innerHTML = '<option value="">Selecciona Material</option>';
+            
+            inventario.forEach((mat, i) => {
                 tabla.innerHTML += `
-                    <tr class="hover:bg-gray-50 border-b">
-                        <td class="p-3 font-semibold">${mat.tipo}</td>
-                        <td class="p-3">${mat.marca}</td>
-                        <td class="p-3">${mat.peso} g</td>
-                        <td class="p-3">$${mat.costo}</td>
-                        <td class="p-3 text-center space-x-1">
-                            <button onclick="editarMaterial(${index})" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold shadow-sm">Editar</button>
-                            <button onclick="eliminarMaterial(${index})" class="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold shadow-sm">Borrar</button>
+                    <tr class="border-b">
+                        <td class="p-3 font-bold">${mat.tipo}</td>
+                        <td class="p-3 text-blue-600 font-black">${mat.peso} g</td>
+                        <td class="p-3 space-x-2">
+                            <button onclick="descontarMaterial(${i})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">- Consumo</button>
+                            <button onclick="editarMaterial(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">Editar</button>
+                            <button onclick="eliminarMaterial(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">Borrar</button>
                         </td>
-                    </tr>
-                `;
-                select.innerHTML += `<option value="${mat.costo}">${mat.tipo} (${mat.marca})</option>`;
+                    </tr>`;
+                select.innerHTML += `<option value="${mat.costo}">${mat.tipo} ($${mat.costo}/kg)</option>`;
             });
         }
 
+        function descontarMaterial(i) {
+            const consumo = prompt(`¿Cuántos gramos consumiste de ${inventario[i].tipo}?`);
+            if (consumo && !isNaN(consumo)) {
+                inventario[i].peso -= parseFloat(consumo);
+                actualizarInterfaz();
+            }
+        }
+
         function agregarMaterial() {
-            const tipo = document.getElementById('nuevoTipo').value;
-            const marca = document.getElementById('nuevaMarca').value;
-            const peso = parseFloat(document.getElementById('nuevoPeso').value);
-            const costo = parseFloat(document.getElementById('nuevoCosto').value);
-
-            if (!tipo || !costo) { alert('Llene Tipo y Costo.'); return; }
-            inventario.unshift({ tipo, marca, peso, costo });
-            guardarYActualizar();
+            inventario.push({ tipo: document.getElementById('nuevoTipo').value, peso: parseFloat(document.getElementById('nuevoPeso').value), costo: parseFloat(document.getElementById('nuevoCosto').value) });
+            actualizarInterfaz();
         }
 
-        function eliminarMaterial(index) {
-            if (confirm(`¿Eliminar ${inventario[index].tipo}?`)) {
-                inventario.splice(index, 1);
-                guardarYActualizar();
-            }
+        function editarMaterial(i) {
+            const nuevoNombre = prompt("Nuevo nombre:", inventario[i].tipo);
+            if(nuevoNombre) { inventario[i].tipo = nuevoNombre; actualizarInterfaz(); }
         }
 
-        function editarMaterial(index) {
-            const mat = inventario[index];
-            const nuevoPeso = prompt(`Gramos disponibles de ${mat.tipo}:`, mat.peso);
-            if (nuevoPeso) {
-                const nuevoCosto = prompt(`Costo por Kg:`, mat.costo);
-                if (nuevoCosto) {
-                    inventario[index].peso = parseFloat(nuevoPeso);
-                    inventario[index].costo = parseFloat(nuevoCosto);
-                    guardarYActualizar();
-                }
-            }
-        }
+        function eliminarMaterial(i) { if(confirm("¿Borrar?")) { inventario.splice(i, 1); actualizarInterfaz(); } }
 
         function calcularCosto() {
             const costoKg = parseFloat(document.getElementById('selectMaterial').value);
             const peso = parseFloat(document.getElementById('peso').value);
             const tiempo = parseFloat(document.getElementById('tiempo').value);
-            
-            const porcMerma = parseFloat(document.getElementById('merma').value) / 100;
-            const porcUtilidad = parseFloat(document.getElementById('utilidad').value) / 100;
-            const requiereFactura = document.getElementById('incluirIva').checked;
-            
-            if (peso > 0 && tiempo > 0) {
-                // Costos Puros
-                const costoMaterial = (peso / 1000) * costoKg;
-                const costoMaquina = tiempo * 15; 
-                const costoBruto = costoMaterial + costoMaquina + 50; 
-                
-                // Reserva y Utilidad
-                const costoRiesgo = costoBruto * porcMerma;
-                const costoTotalInterno = costoBruto + costoRiesgo;
-                const gananciaReal = costoTotalInterno * porcUtilidad;
-                
-                // Subtotal antes de impuestos
-                const subtotal = costoTotalIntern
+            const subtotal = ((peso/1000)*costoKg) + (tiempo*15) + 50;
+            const total = document.getElementById('incluirIva').checked ? subtotal * 1.16 : subtotal;
+            document.getElementById('precioVenta').innerText = "$" + Math.ceil(total) + ".00 MXN";
+            document.getElementById('resultado').classList.remove('hidden');
+        }
+
+        actualizarInterfaz();
+    </script>
+</body>
+</html>
