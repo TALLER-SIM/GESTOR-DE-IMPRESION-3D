@@ -32,12 +32,12 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre de la Pieza (SolidWorks)</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre de la Pieza</label>
                     <input type="text" id="nombrePieza" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Ej. Soporte Técnico Actuador">
                 </div>
                 
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1">Seleccionar Material del Inventario</label>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">Seleccionar Material</label>
                     <select id="selectMaterial" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500 bg-white">
                         </select>
                 </div>
@@ -80,12 +80,13 @@
         </section>
 
         <section id="pantallaInventario" class="hidden grid grid-cols-1 md:grid-cols-3 gap-6">
+            
             <div class="bg-white rounded-xl shadow-md p-6 h-fit">
                 <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Alta Manual de Material</h2>
                 <div class="space-y-4">
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Tipo de Material</label>
-                        <input type="text" id="nuevoTipo" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Ej. Nylon-CF, TPU, ABS">
+                        <input type="text" id="nuevoTipo" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="Ej. Nylon-CF, TPU">
                     </div>
                     <div>
                         <label class="block text-sm font-bold text-gray-700 mb-1">Marca / Color</label>
@@ -93,11 +94,11 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Peso Neto (g)</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Peso (g)</label>
                             <input type="number" id="nuevoPeso" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500" value="1000">
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Costo por Kg ($)</label>
+                            <label class="block text-sm font-bold text-gray-700 mb-1">Costo/Kg ($)</label>
                             <input type="number" id="nuevoCosto" class="w-full rounded-md border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-blue-500" placeholder="0">
                         </div>
                     </div>
@@ -109,13 +110,14 @@
 
             <div class="bg-white rounded-xl shadow-md p-6 md:col-span-2 overflow-x-auto">
                 <h2 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Materiales en Taller</h2>
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse min-w-[500px]">
                     <thead>
                         <tr class="bg-gray-100 text-gray-700 text-sm">
                             <th class="p-3 border-b">Material</th>
                             <th class="p-3 border-b">Marca/Color</th>
-                            <th class="p-3 border-b">Disponible (g)</th>
+                            <th class="p-3 border-b">Disp. (g)</th>
                             <th class="p-3 border-b">Costo/Kg</th>
+                            <th class="p-3 border-b text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="tablaInventario" class="text-sm text-gray-800">
@@ -126,14 +128,19 @@
     </main>
 
     <script>
-        // Base de datos temporal en memoria
-        let inventario = [
+        // 1. Cargar inventario guardado en la memoria del navegador, o usar la plantilla por defecto.
+        let inventario = JSON.parse(localStorage.getItem('inventarioTaller')) || [
             { tipo: "Nylon-CF (PA-CF)", marca: "Genérico Negro", peso: 850, costo: 1800 },
             { tipo: "TPU Flexible", marca: "Sainsmart Azul", peso: 1000, costo: 700 },
             { tipo: "ABS", marca: "Hatchbox Gris", peso: 320, costo: 600 }
         ];
 
-        // Cambiar entre pestañas
+        // 2. Función maestra para guardar cambios y refrescar la pantalla
+        function guardarYActualizar() {
+            localStorage.setItem('inventarioTaller', JSON.stringify(inventario));
+            actualizarInterfaz();
+        }
+
         function cambiarPantalla(pantalla) {
             const cot = document.getElementById('pantallaCotizador');
             const inv = document.getElementById('pantallaInventario');
@@ -153,7 +160,6 @@
             }
         }
 
-        // Renderizar datos en las tablas y menús desplegables
         function actualizarInterfaz() {
             const tabla = document.getElementById('tablaInventario');
             const select = document.getElementById('selectMaterial');
@@ -162,23 +168,28 @@
             select.innerHTML = '';
 
             inventario.forEach((mat, index) => {
-                // Rellenar Tabla
+                // Generar filas de tabla con botones de Editar y Borrar
                 tabla.innerHTML += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="p-3 border-b font-semibold">${mat.tipo}</td>
-                        <td class="p-3 border-b">${mat.marca}</td>
-                        <td class="p-3 border-b">${mat.peso} g</td>
-                        <td class="p-3 border-b">$${mat.costo.refresh} MXN</td>
+                    <tr class="hover:bg-gray-50 border-b">
+                        <td class="p-3 font-semibold">${mat.tipo}</td>
+                        <td class="p-3">${mat.marca}</td>
+                        <td class="p-3">${mat.peso} g</td>
+                        <td class="p-3">$${mat.costo} MXN</td>
+                        <td class="p-3 text-center space-x-1">
+                            <button onclick="editarMaterial(${index})" class="bg-yellow-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-yellow-600 shadow-sm">Editar</button>
+                            <button onclick="eliminarMaterial(${index})" class="bg-red-500 text-white px-3 py-1 rounded text-xs font-bold hover:bg-red-600 shadow-sm">Borrar</button>
+                        </td>
                     </tr>
                 `;
-                // Rellenar menú desplegable del Cotizador
+                
+                // Actualizar menú del cotizador
                 select.innerHTML += `
                     <option value="${mat.costo}">${mat.tipo} (${mat.marca})</option>
                 `;
             });
         }
 
-        // Registrar un material manualmente
+        // Agregar un nuevo material
         function agregarMaterial() {
             const tipo = document.getElementById('nuevoTipo').value;
             const marca = document.getElementById('nuevaMarca').value;
@@ -186,22 +197,42 @@
             const costo = parseFloat(document.getElementById('nuevoCosto').value);
 
             if (!tipo || !costo) {
-                alert('Por favor llene los campos obligatorios (Material y Costo).');
+                alert('Por favor llene al menos el Tipo de Material y el Costo.');
                 return;
             }
 
             inventario.unshift({ tipo, marca, peso, costo });
-            actualizarInterfaz();
+            guardarYActualizar(); // Guardamos en memoria automáticamente
 
-            // Limpiar campos
             document.getElementById('nuevoTipo').value = '';
             document.getElementById('nuevaMarca').value = '';
             document.getElementById('nuevoCosto').value = '';
-            
-            alert('Material añadido. Ya está disponible en la pestaña de Cotizador.');
         }
 
-        // Calcular costo de cotización
+        // NUEVO: Función para eliminar
+        function eliminarMaterial(index) {
+            const confirmacion = confirm(`¿Estás seguro de eliminar el material: ${inventario[index].tipo}?`);
+            if (confirmacion) {
+                inventario.splice(index, 1); // Quita 1 elemento en la posición "index"
+                guardarYActualizar();
+            }
+        }
+
+        // NUEVO: Función para editar (útil para descontar gramos)
+        function editarMaterial(index) {
+            const material = inventario[index];
+            const nuevoPeso = prompt(`Actualizar los gramos disponibles de ${material.tipo}:`, material.peso);
+            
+            if (nuevoPeso !== null && nuevoPeso !== "") {
+                const nuevoCosto = prompt(`Actualizar el costo por Kg de ${material.tipo} (MXN):`, material.costo);
+                if (nuevoCosto !== null && nuevoCosto !== "") {
+                    inventario[index].peso = parseFloat(nuevoPeso);
+                    inventario[index].costo = parseFloat(nuevoCosto);
+                    guardarYActualizar();
+                }
+            }
+        }
+
         function calcularCosto() {
             const costoKg = parseFloat(document.getElementById('selectMaterial').value);
             const peso = parseFloat(document.getElementById('peso').value);
@@ -209,8 +240,8 @@
             
             if (peso > 0 && tiempo > 0) {
                 const costoMaterial = (peso / 1000) * costoKg;
-                const costoMaquina = tiempo * 15; // Tarifa por hora fija
-                const costoTotal = costoMaterial + costoMaquina + 50; // +50 fijos de preparación
+                const costoMaquina = tiempo * 15; 
+                const costoTotal = costoMaterial + costoMaquina + 50; 
 
                 document.getElementById('costoMat').innerText = "$" + costoMaterial.toFixed(2) + " MXN";
                 document.getElementById('costoMaq').innerText = "$" + costoMaquina.toFixed(2) + " MXN";
@@ -221,7 +252,7 @@
             }
         }
 
-        // Inicializar datos al cargar la página
+        // Inicializar
         actualizarInterfaz();
     </script>
 </body>
