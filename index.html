@@ -23,7 +23,8 @@
             
             <div class="grid grid-cols-2 gap-4">
                 <div><label class="text-xs font-bold text-gray-500">Gramos (g)</label><input type="number" id="peso" class="border p-2 rounded w-full"></div>
-                <div><label class="text-xs font-bold text-gray-500">Horas (h)</label><input type="number" id="tiempo" class="border p-2 rounded w-full"></div>
+                <div><label class="text-xs font-bold text-gray-500">Tiempo (min)</label><input type="number" id="tiempoMin" class="border p-2 rounded w-full"></div>
+                
                 <div><label class="text-xs font-bold text-gray-500">Riesgo (%)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
                 <div><label class="text-xs font-bold text-gray-500">Utilidad (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
             </div>
@@ -47,11 +48,7 @@
             
             <div class="bg-white p-6 rounded shadow overflow-x-auto">
                 <table class="w-full text-left">
-                    <thead>
-                        <tr class="bg-gray-100 text-xs uppercase">
-                            <th class="p-2">Mat.</th><th class="p-2">Marca</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th>
-                        </tr>
-                    </thead>
+                    <thead><tr class="bg-gray-100 text-xs uppercase"><th class="p-2">Mat.</th><th class="p-2">Marca</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th></tr></thead>
                     <tbody id="tablaInventario"></tbody>
                 </table>
             </div>
@@ -119,18 +116,10 @@
             const mat = inventario[idx];
             
             const peso = parseFloat(document.getElementById('peso').value);
-            const tiempo = parseFloat(document.getElementById('tiempo').value);
+            // CONVERSIÓN: Minutos a horas para el cálculo de tarifa
+            const tiempoHoras = parseFloat(document.getElementById('tiempoMin').value) / 60;
             const merma = parseFloat(document.getElementById('merma').value)/100;
             const utilidad = parseFloat(document.getElementById('utilidad').value)/100;
             
-            const costoBase = ((peso/1000)*mat.costo) + (tiempo*15) + 50;
-            const final = (costoBase * (1 + merma) * (1 + utilidad)) * (document.getElementById('incluirIva').checked ? 1.16 : 1);
-            
-            document.getElementById('precioVenta').innerText = "$" + Math.ceil(final) + ".00 MXN";
-            document.getElementById('resultado').classList.remove('hidden');
-        }
-        
-        actualizarInterfaz();
-    </script>
-</body>
-</html>
+            // Tarifa de 15 MXN/hora aplicada a la fracción de hora
+            const costoBase = ((peso/1
