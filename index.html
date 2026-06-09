@@ -9,42 +9,46 @@
 <body class="bg-gray-100 min-h-screen">
 
     <nav class="bg-slate-900 text-white p-4 flex justify-between items-center shadow-lg">
-        <h1 class="font-black">Soluciones de Ingeniería</h1>
+        <h1 class="font-black text-sm">Soluciones de Ingeniería</h1>
         <div class="space-x-2">
-            <button id="btnCotizador" onclick="mostrarSeccion('cotizador')" class="bg-blue-600 px-4 py-2 rounded text-sm font-bold">Cotizador</button>
-            <button id="btnInventario" onclick="mostrarSeccion('inventario')" class="bg-slate-700 px-4 py-2 rounded text-sm font-bold">Inventario</button>
+            <button id="btnCotizador" onclick="mostrarSeccion('cotizador')" class="bg-blue-600 px-3 py-2 rounded text-xs font-bold">Cotizador</button>
+            <button id="btnInventario" onclick="mostrarSeccion('inventario')" class="bg-slate-700 px-3 py-2 rounded text-xs font-bold">Inventario</button>
         </div>
     </nav>
+
+    <div id="cargando" class="bg-blue-100 text-blue-800 text-center py-1 text-xs font-bold">
+        Conectando con Google Sheets...
+    </div>
 
     <main class="max-w-4xl mx-auto p-4">
         <section id="seccionCotizador" class="block bg-white p-6 rounded shadow space-y-4">
             <h2 class="font-bold text-lg border-b pb-2">Cotizador Comercial</h2>
-            <select id="selectMaterial" class="w-full border p-2 rounded"></select>
+            <select id="selectMaterial" class="w-full border p-2 rounded bg-gray-50"></select>
             <div class="grid grid-cols-2 gap-4">
-                <div><label class="text-xs font-bold text-gray-500">Gramos (g)</label><input type="number" id="peso" class="border p-2 rounded w-full"></div>
-                <div><label class="text-xs font-bold text-gray-500">Tiempo (min)</label><input type="number" id="tiempoMin" class="border p-2 rounded w-full"></div>
-                <div><label class="text-xs font-bold text-gray-500">Riesgo (%)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
-                <div><label class="text-xs font-bold text-gray-500">Utilidad (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
+                <div><label class="text-[10px] font-bold text-gray-500">Gramos (g)</label><input type="number" id="peso" class="border p-2 rounded w-full"></div>
+                <div><label class="text-[10px] font-bold text-gray-500">Tiempo (min)</label><input type="number" id="tiempoMin" class="border p-2 rounded w-full"></div>
+                <div><label class="text-[10px] font-bold text-gray-500">Riesgo (%)</label><input type="number" id="merma" value="15" class="border p-2 rounded w-full bg-yellow-50"></div>
+                <div><label class="text-[10px] font-bold text-gray-500">Utilidad (%)</label><input type="number" id="utilidad" value="100" class="border p-2 rounded w-full bg-green-50"></div>
             </div>
             <label class="flex items-center text-sm font-bold"><input type="checkbox" id="incluirIva" class="mr-2"> Factura (+16% IVA)</label>
-            <button onclick="calcularCosto()" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700">Calcular Precio de Venta</button>
-            <div id="resultado" class="mt-4 p-4 bg-green-100 rounded text-center hidden"><p id="precioVenta" class="text-3xl font-black text-green-800"></p></div>
+            <button onclick="calcularCosto()" class="w-full bg-blue-600 text-white font-bold py-2 rounded hover:bg-blue-700 transition">Calcular Precio de Venta</button>
+            <div id="resultado" class="mt-4 p-4 bg-green-100 rounded text-center hidden"><p id="precioVenta" class="text-2xl font-black text-green-800"></p></div>
         </section>
 
-        <section id="seccionInventario" class="hidden space-y-6">
+        <section id="seccionInventario" class="hidden space-y-4">
             <div class="bg-white p-6 rounded shadow">
                 <h2 class="font-bold mb-4">Registrar Nuevo Material</h2>
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="nuevoTipo" placeholder="Tipo" class="border p-2 rounded">
-                    <input type="text" id="nuevaMarca" placeholder="Marca" class="border p-2 rounded">
-                    <input type="number" id="nuevoPeso" placeholder="Peso (g)" class="border p-2 rounded">
-                    <input type="number" id="nuevoCosto" placeholder="Costo/Kg" class="border p-2 rounded">
-                    <button onclick="agregarMaterial()" class="col-span-2 bg-slate-800 text-white font-bold py-2 rounded hover:bg-slate-900">Guardar Material</button>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="nuevoTipo" placeholder="Tipo (Ej. Nylon-CF, ABS)" class="border p-2 rounded text-sm col-span-2">
+                    <input type="text" id="nuevaMarca" placeholder="Marca (Ej. Polymaker)" class="border p-2 rounded text-sm">
+                    <input type="number" id="nuevoPeso" placeholder="Peso inicial (g)" class="border p-2 rounded text-sm">
+                    <input type="number" id="nuevoCosto" placeholder="Costo por Kg ($)" class="border p-2 rounded text-sm col-span-2">
+                    <button onclick="agregarMaterial()" class="col-span-2 bg-slate-800 text-white font-bold py-2 rounded text-sm hover:bg-slate-900 transition">Guardar en Nube</button>
                 </div>
             </div>
-            <div class="bg-white p-6 rounded shadow overflow-x-auto">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-100 text-xs uppercase"><tr><th class="p-2">Mat.</th><th class="p-2">Marca</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th></tr></thead>
+            <div class="bg-white p-4 rounded shadow overflow-x-auto">
+                <table class="w-full text-left text-[11px]">
+                    <thead class="bg-gray-100 uppercase text-gray-600"><tr><th class="p-2">Material</th><th class="p-2">Disp.</th><th class="p-2">Acciones</th></tr></thead>
                     <tbody id="tablaInventario"></tbody>
                 </table>
             </div>
@@ -52,33 +56,66 @@
     </main>
 
     <script>
-        let inventario = JSON.parse(localStorage.getItem('inventarioTaller')) || [];
+        // Enlace de la base de datos de Google ya incluido de forma segura
+        const URL_API = "https://script.google.com/macros/s/AKfycbzbX8xOBWIYM4-5v76ZukQW7dbO_KVJ_DfXzqeSiyMUqAkZqHxWTZlyrYTOxhERpfttFg/exec"; 
+
+        let inventario = [];
 
         function mostrarSeccion(s) {
             document.getElementById('seccionCotizador').style.display = (s === 'cotizador') ? 'block' : 'none';
             document.getElementById('seccionInventario').style.display = (s === 'inventario') ? 'block' : 'none';
-            document.getElementById('btnCotizador').className = (s === 'cotizador') ? 'bg-blue-600 px-4 py-2 rounded text-sm font-bold' : 'bg-slate-700 px-4 py-2 rounded text-sm font-bold';
-            document.getElementById('btnInventario').className = (s === 'inventario') ? 'bg-blue-600 px-4 py-2 rounded text-sm font-bold' : 'bg-slate-700 px-4 py-2 rounded text-sm font-bold';
+            document.getElementById('btnCotizador').className = (s === 'cotizador') ? 'bg-blue-600 px-3 py-2 rounded text-xs font-bold' : 'bg-slate-700 px-3 py-2 rounded text-xs font-bold';
+            document.getElementById('btnInventario').className = (s === 'inventario') ? 'bg-blue-600 px-3 py-2 rounded text-xs font-bold' : 'bg-slate-700 px-3 py-2 rounded text-xs font-bold';
+        }
+
+        // Leer datos desde tu Google Sheet
+        async function cargarDesdeNube() {
+            try {
+                const response = await fetch(URL_API);
+                inventario = await response.json();
+                document.getElementById('cargando').style.display = 'none'; 
+                actualizarUI();
+            } catch (error) {
+                console.error("Error al cargar:", error);
+                document.getElementById('cargando').innerText = "Error al conectar. Verifica los permisos de tu Google Sheet.";
+                document.getElementById('cargando').className = "bg-red-100 text-red-800 text-center py-1 text-xs font-bold";
+            }
+        }
+
+        // Guardar/Sincronizar con Google Sheets
+        async function guardarEnNube() {
+            document.getElementById('cargando').innerText = "Sincronizando con Google Sheets...";
+            document.getElementById('cargando').style.display = 'block';
+            try {
+                await fetch(URL_API, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(inventario)
+                });
+                document.getElementById('cargando').style.display = 'none';
+            } catch (error) {
+                console.error("Error al guardar:", error);
+                alert("Error de red al sincronizar con la nube.");
+            }
         }
 
         function actualizarUI() {
-            localStorage.setItem('inventarioTaller', JSON.stringify(inventario));
             const tabla = document.getElementById('tablaInventario');
             const select = document.getElementById('selectMaterial');
             tabla.innerHTML = ''; 
-            select.innerHTML = '<option value="">Selecciona Material</option>';
+            select.innerHTML = '<option value="">Selecciona Material de la Nube</option>';
             
             inventario.forEach((mat, i) => {
-                tabla.innerHTML += `<tr class="border-b text-sm">
-                    <td class="p-2 font-bold">${mat.tipo}</td>
-                    <td class="p-2">${mat.marca}</td>
-                    <td class="p-2 font-bold text-blue-600">${mat.peso}g</td>
-                    <td class="p-2 flex gap-1">
-                        <button onclick="consumo(${i})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs">Consumo</button>
-                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs">Edit</button>
-                        <button onclick="borrar(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs">X</button>
-                    </td></tr>`;
-                select.innerHTML += `<option value="${i}">${mat.tipo} (${mat.marca})</option>`;
+                tabla.innerHTML += `<tr class="border-b">
+                    <td class="p-2 font-bold">${mat.tipo} <br><span class="text-[9px] font-normal text-gray-500">${mat.marca}</span></td>
+                    <td class="p-2 text-blue-600 font-bold">${mat.peso}g</td>
+                    <td class="p-2 flex gap-1 items-center">
+                        <button onclick="consumo(${i})" class="bg-blue-500 text-white px-2 py-1 rounded text-xs font-bold hover:bg-blue-600">Cons</button>
+                        <button onclick="editar(${i})" class="bg-yellow-500 text-white px-2 py-1 rounded text-xs font-bold hover:bg-yellow-600">Edit</button>
+                        <button onclick="borrar(${i})" class="bg-red-500 text-white px-2 py-1 rounded text-xs font-bold hover:bg-red-600">X</button>
+                    </td>
+                </tr>`;
+                select.innerHTML += `<option value="${i}">${mat.tipo} (${mat.marca}) - $${mat.costo}/kg</option>`;
             });
         }
 
@@ -87,36 +124,58 @@
             const marca = document.getElementById('nuevaMarca').value;
             const peso = parseFloat(document.getElementById('nuevoPeso').value);
             const costo = parseFloat(document.getElementById('nuevoCosto').value);
+            
             if(tipo && !isNaN(peso) && !isNaN(costo)) {
                 inventario.push({ tipo, marca, peso, costo });
-                actualizarUI();
+                actualizarUI(); 
+                guardarEnNube(); 
+                
+                document.getElementById('nuevoTipo').value = '';
+                document.getElementById('nuevaMarca').value = '';
+                document.getElementById('nuevoPeso').value = '';
+                document.getElementById('nuevoCosto').value = '';
+            } else {
+                alert("Por favor completa los campos obligatorios (Tipo, Peso y Costo)");
             }
         }
 
-        function consumo(i) {
-            const gr = prompt("Gramos utilizados:");
-            if(gr && !isNaN(gr)) { inventario[i].peso -= parseFloat(gr); actualizarUI(); }
+        function consumo(i) { 
+            const gr = prompt("¿Cuántos gramos de material consumió este trabajo?"); 
+            if(gr && !isNaN(gr)) { 
+                inventario[i].peso -= parseFloat(gr); 
+                actualizarUI(); 
+                guardarEnNube(); 
+            } 
         }
-
+        
         function editar(i) {
             const m = inventario[i];
-            const t = prompt("Nuevo nombre:", m.tipo);
-            const mr = prompt("Nueva marca:", m.marca);
-            const c = prompt("Nuevo costo por Kg:", m.costo);
+            const t = prompt("Modificar nombre/tipo:", m.tipo);
+            const mr = prompt("Modificar marca:", m.marca);
+            const c = prompt("Modificar costo por Kg:", m.costo);
             if(t) m.tipo = t; if(mr) m.marca = mr; if(c) m.costo = parseFloat(c);
             actualizarUI();
+            guardarEnNube();
         }
 
-        function borrar(i) { if(confirm("¿Eliminar?")) { inventario.splice(i, 1); actualizarUI(); } }
+        function borrar(i) { 
+            if(confirm("¿Estás seguro de eliminar este material permanentemente del taller?")) { 
+                inventario.splice(i, 1); 
+                actualizarUI(); 
+                guardarEnNube(); 
+            } 
+        }
 
         function calcularCosto() {
             const idx = document.getElementById('selectMaterial').value;
-            if(idx === "") return alert("Selecciona material");
+            if(idx === "") return alert("Selecciona un material del inventario");
             const mat = inventario[idx];
             const p = parseFloat(document.getElementById('peso').value);
             const t = parseFloat(document.getElementById('tiempoMin').value);
             const m = parseFloat(document.getElementById('merma').value)/100;
             const u = parseFloat(document.getElementById('utilidad').value)/100;
+            
+            if(isNaN(p) || isNaN(t)) return alert("Introduce los gramos y minutos del laminado");
             
             const base = ((p/1000)*mat.costo) + ((t/60)*15) + 50;
             const fin = (base * (1 + m) * (1 + u)) * (document.getElementById('incluirIva').checked ? 1.16 : 1);
@@ -125,8 +184,8 @@
             document.getElementById('resultado').classList.remove('hidden');
         }
         
-        actualizarUI();
+        // Arrancar pidiendo los datos a Google Drive
+        cargarDesdeNube();
     </script>
 </body>
 </html>
-       
