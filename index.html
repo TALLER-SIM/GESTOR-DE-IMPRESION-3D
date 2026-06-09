@@ -56,8 +56,8 @@
     </main>
 
     <script>
-        // Enlace de la base de datos de Google ya incluido de forma segura
-        const URL_API = "https://script.google.com/macros/s/AKfycbzbX8xOBWIYM4-5v76ZukQW7dbO_KVJ_DfXzqeSiyMUqAkZqHxWTZlyrYTOxhERpfttFg/exec"; 
+        // URL enlazada a tu Google Sheet personal
+        const URL_API = "https://script.google.com/macros/s/AKfycbwwMbrAVKQzRaNb2xykHfWhqBicXxEZLpCMtE9ppsSImBEfGtVVNOGUyTICS2KqZlUBKw/exec"; 
 
         let inventario = [];
 
@@ -68,7 +68,7 @@
             document.getElementById('btnInventario').className = (s === 'inventario') ? 'bg-blue-600 px-3 py-2 rounded text-xs font-bold' : 'bg-slate-700 px-3 py-2 rounded text-xs font-bold';
         }
 
-        // Leer datos desde tu Google Sheet
+        // Leer datos desde Google Sheet
         async function cargarDesdeNube() {
             try {
                 const response = await fetch(URL_API);
@@ -77,7 +77,7 @@
                 actualizarUI();
             } catch (error) {
                 console.error("Error al cargar:", error);
-                document.getElementById('cargando').innerText = "Error al conectar. Verifica los permisos de tu Google Sheet.";
+                document.getElementById('cargando').innerText = "Error al conectar. Verifica tu Google Sheet.";
                 document.getElementById('cargando').className = "bg-red-100 text-red-800 text-center py-1 text-xs font-bold";
             }
         }
@@ -184,7 +184,6 @@
             document.getElementById('resultado').classList.remove('hidden');
         }
         
-        // Arrancar pidiendo los datos a Google Drive
         cargarDesdeNube();
     </script>
 </body>
